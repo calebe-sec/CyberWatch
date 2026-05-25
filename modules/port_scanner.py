@@ -1,6 +1,7 @@
 import threading
 import socket
 from core.parser import create_parser
+from modules.banner_grabber import grab_banner
 
 def parser_ports(arguments) -> list[int]:
     ports = []
@@ -22,8 +23,7 @@ def parser_ports(arguments) -> list[int]:
 
     return ports
 
-
-def scan(ip: str, port: int) -> None:
+def scan(ip: str, port: int, banner=False) -> None:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(5)
@@ -31,6 +31,9 @@ def scan(ip: str, port: int) -> None:
         
         if result == 0:
             print(f"[OPEN] port {port}")
+
+            if banner:
+                grab_banner(ip, port)
         else:
             print(f"[CLOSE] port {port}")
         
@@ -41,12 +44,12 @@ def scan(ip: str, port: int) -> None:
     finally:
         s.close()    
 
-def scanning(ip: str, ports: list[int]) -> None:
+def scanning(ip: str, ports: list[int], banner) -> None:
     threads = []
     
     for port in ports:
         t = threading.Thread(target=scan,
-                             args=(ip,port)
+                             args=(ip,port, banner)
                              )
         threads.append(t) 
         t.start()
