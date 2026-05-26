@@ -12,11 +12,11 @@ def connect_sock(ip, port):
     s.connect((ip, port))
     return s
 
-def receive_response(sock):    
+def receive_response(sock) -> str:
     r = sock.recv(4096)
 
     decod = r.decode(errors="ignore")
-    print(f"SERVICE: {decod}")
+    return decod
     
 
 def grab_banner_http(ip: str, port: int):
@@ -31,7 +31,7 @@ def grab_banner_http(ip: str, port: int):
         )
         sock.send(request.encode())
 
-        receive_response(sock)
+        return receive_response(sock)
 
     except Exception as err:
             print(err)
@@ -51,7 +51,7 @@ def grab_banner_https(ip:str, port: int):
 
         decod = response.decode(errors="ignore")
 
-        print(f"SERVICE: {decod}")
+        return decod
 
     except Exception as err:
             print(err)
@@ -74,7 +74,7 @@ def grab_banner_ssh(ip: str, port: int):
     try:
         sock = connect_sock(ip, port)
 
-        receive_response(sock)
+        return receive_response(sock)
 
     except Exception as err:
         print(err)
@@ -86,7 +86,7 @@ def grab_banner_ftp(ip: str, port: int):
     try:
         sock = connect_sock(ip, port)
 
-        receive_response(sock)
+        return receive_response(sock)
     
     except Exception as err:
         print(err)
@@ -99,7 +99,7 @@ def grab_banner_telnet(ip: str, port: int):
         sock = connect_sock(ip, port)
 
         sock.send(b"whoami\r\n")
-        receive_response(sock)
+        return receive_response(sock)
     
     except Exception as err:
         print(err)
@@ -111,7 +111,7 @@ def grab_banner_smtp(ip: str, port: int):
     try:
         sock = connect_sock(ip, port)
 
-        receive_response(sock)
+        return receive_response(sock)
 
     except Exception as e:
         print(e)
@@ -142,7 +142,7 @@ def grab_banner(ip: str, port: int) -> str:
         handler = SERVICES.get(port)
 
         if handler:
-            handler(ip, port)
+            return handler(ip, port)
 
         else:
             print(f"[!] No handler for port {port}")

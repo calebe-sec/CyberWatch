@@ -2,6 +2,7 @@ import threading
 import socket
 from core.parser import create_parser
 from modules.banner_grabber import grab_banner
+from modules.fingerprint import identify_service
 
 def parser_ports(arguments) -> list[int]:
     ports = []
@@ -23,17 +24,21 @@ def parser_ports(arguments) -> list[int]:
 
     return ports
 
-def scan(ip: str, port: int, banner=False) -> None:
+def scan(ip: str, port: int, banner_enable=False) -> None:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(5)
         result = s.connect_ex((ip, port))
-        
-        if result == 0:
-            print(f"[OPEN] port {port}")
 
-            if banner:
-                grab_banner(ip, port)
+        if result == 0:
+
+            banner = grab_banner(ip, port)
+            service_info = identify_service(banner) or "unknown"
+
+            print(f"[OPEN] port {port} : {service_info}")
+
+            if banner_enable:
+                print(banner)
         else:
             print(f"[CLOSE] port {port}")
         
