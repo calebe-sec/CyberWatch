@@ -2,7 +2,7 @@ services = {
     "openssh" : "ssh",
     "apache"  : "http",
     "nginx"   : "http",
-    "http/"   : "http",``
+    "http/"   : "http",
     "vsftpd"  : "ftp",
     "telnet"  : "telnet",
     "smtp"    : "smtp",

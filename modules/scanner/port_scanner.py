@@ -1,8 +1,9 @@
 import threading
 import socket
 from core.parser import create_parser
-from modules.banner_grabber import grab_banner
-from modules.fingerprint import identify_service
+from modules.scanner.banner_grabber import grab_banner
+from modules.scanner.fingerprint import identify_service
+from modules.scanner.version_detection import parser_versions
 
 def parser_ports(arguments) -> list[int]:
     ports = []
@@ -34,8 +35,9 @@ def scan(ip: str, port: int, banner_enable=False) -> None:
 
             banner = grab_banner(ip, port)
             service_info = identify_service(banner) or "unknown"
+            version_service = parser_versions(service_info, banner)
 
-            print(f"[OPEN] port {port} : {service_info}")
+            print(f"[OPEN] port {port} : {service_info} : {version_service}")
 
             if banner_enable:
                 print(banner)

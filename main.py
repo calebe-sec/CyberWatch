@@ -1,6 +1,6 @@
 from core.parser import create_parser
 from core.banner import banner
-from modules.port_scanner import scanning, parser_ports
+from modules.scanner.port_scanner import scanning, parser_ports
 
 
 if __name__ == "__main__":
