@@ -24,8 +24,8 @@ def parser_ports(arguments) -> list[int]:
             ports.append(int(item))
 
     return ports
-
-def scan(ip: str, port: int, banner_enable=False) -> None:
+        
+def scan(ip: str, port: int, banner_enable=False, import_scan=False) -> None:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(5)
@@ -37,10 +37,21 @@ def scan(ip: str, port: int, banner_enable=False) -> None:
             service_info = identify_service(banner) or "unknown"
             version_service = parser_versions(service_info, banner)
 
-            print(f"[OPEN] port {port} : {service_info} : {version_service}")
+            #print(f"[OPEN] port {port} : {service_info} : {version_service}")
 
             if banner_enable:
                 print(banner)
+            
+            RESULT = {
+                "port"    : port,
+                "status"  : "open",
+                "service" : service_info,
+                "version" : version_service
+            }
+
+            return RESULT
+
+            
         else:
             print(f"[CLOSE] port {port}")
         
@@ -51,18 +62,30 @@ def scan(ip: str, port: int, banner_enable=False) -> None:
     finally:
         s.close()    
 
+
 def scanning(ip: str, ports: list[int], banner) -> None:
     threads = []
-    
+    results = []
+
+    def worker(ip, port, banner, results):
+        result = scan(ip, port, banner)
+        if result:
+            results.append(result)
+
     for port in ports:
-        t = threading.Thread(target=scan,
-                             args=(ip,port, banner)
+        t = threading.Thread(target=worker,
+                             args=(ip,
+                                   port,
+                                   banner,
+                                   results,
+                                   )
                              )
         threads.append(t) 
         t.start()
-
+        
     for t in threads:
         t.join()
+    return results
 
 
 
