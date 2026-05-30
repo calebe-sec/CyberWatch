@@ -52,8 +52,8 @@ def scan(ip: str, port: int, banner_enable=False, import_scan=False) -> None:
             return RESULT
 
             
-        else:
-            print(f"[CLOSE] port {port}")
+        #else:
+           # print(f"[CLOSE] port {port}")
         
         # print(f"Port {port} -> {result}")
     except Exception as err:
