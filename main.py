@@ -21,14 +21,21 @@ if __name__ == "__main__":
 
         results = scanning(target, ports, 
                            args.banner,
-                           args.timeout)
+                           args.timeout,
+                           args.web_enum)
         
         if args.output:
             export_json(args.output, results)
         for result in results:
             print(
-    f"[{result['status'].upper()}] "
-    f"{result['port']} : "
-    f"{result['service']} : "
-    f"{result['version']}"
-)
+                f"[{result['status'].upper()}] "
+                f"{result['port']} : "
+                f"{result['service']} : "
+                f"{result['version']}"
+            )
+
+            web_info = result.get("web_enum")
+
+            if web_info:
+                print(f"  ├─ Title: {web_info['title']}")
+                print(f"  └─ Content-Type: {web_info['content_Type']}")

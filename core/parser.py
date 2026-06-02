@@ -97,6 +97,12 @@ def create_parser():
         help="only open port"
     )
 
+    scan_parser.add_argument(
+        "--web-enum",
+        action="store_true",
+        help="Enumerate HTTP/HTTPS services",
+    )
+
     return parser
 
 

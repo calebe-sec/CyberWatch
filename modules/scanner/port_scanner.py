@@ -4,6 +4,7 @@ from core.parser import create_parser
 from modules.scanner.banner_grabber import grab_banner
 from modules.scanner.fingerprint import identify_service
 from modules.scanner.version_detection import parser_versions
+from modules.scanner.http_enum import http_enum
 
 def parser_ports(arguments) -> list[int]:
     ports = []
@@ -25,7 +26,7 @@ def parser_ports(arguments) -> list[int]:
 
     return ports
         
-def scan(ip: str, port: int, banner_enable=False, timeout=5) -> None:
+def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> None:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(timeout)
@@ -41,13 +42,22 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5) -> None:
 
             if banner_enable:
                 print(banner)
+
+            if port == "80" or "443":
+                if web_enum:
+                    #print("ta rodando aqui o web_enum")
+                    web_info = http_enum(banner)
+                    #print(web_info)
+
             
             RESULT = {
                 "port"    : port,
                 "status"  : "open",
                 "service" : service_info,
-                "version" : version_service
+                "version" : version_service,
+                "web_enum": web_info
             }
+            
 
             return RESULT
 
@@ -63,12 +73,12 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5) -> None:
         s.close()    
 
 
-def scanning(ip: str, ports: list[int], banner, timeout=5) -> None:
+def scanning(ip: str, ports: list[int], banner, timeout=5, web_enum=False) -> None:
     threads = []
     results = []
 
-    def worker(ip, port, banner, timeout, results):
-        result = scan(ip, port, banner, timeout)
+    def worker(ip, port, banner, timeout,web_enum, results):
+        result = scan(ip, port, banner, timeout, web_enum)
         if result:
             results.append(result)
 
@@ -78,6 +88,7 @@ def scanning(ip: str, ports: list[int], banner, timeout=5) -> None:
                                    port,
                                    banner,
                                    timeout,
+                                   web_enum,
                                    results,
                                    )
                              )
