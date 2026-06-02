@@ -25,10 +25,10 @@ def parser_ports(arguments) -> list[int]:
 
     return ports
         
-def scan(ip: str, port: int, banner_enable=False, import_scan=False) -> None:
+def scan(ip: str, port: int, banner_enable=False, timeout=5) -> None:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(5)
+        s.settimeout(timeout)
         result = s.connect_ex((ip, port))
 
         if result == 0:
@@ -63,12 +63,12 @@ def scan(ip: str, port: int, banner_enable=False, import_scan=False) -> None:
         s.close()    
 
 
-def scanning(ip: str, ports: list[int], banner) -> None:
+def scanning(ip: str, ports: list[int], banner, timeout=5) -> None:
     threads = []
     results = []
 
-    def worker(ip, port, banner, results):
-        result = scan(ip, port, banner)
+    def worker(ip, port, banner, timeout, results):
+        result = scan(ip, port, banner, timeout)
         if result:
             results.append(result)
 
@@ -77,6 +77,7 @@ def scanning(ip: str, ports: list[int], banner) -> None:
                              args=(ip,
                                    port,
                                    banner,
+                                   timeout,
                                    results,
                                    )
                              )

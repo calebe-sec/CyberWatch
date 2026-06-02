@@ -19,7 +19,9 @@ if __name__ == "__main__":
 
         ports = parser_ports(args.ports)
 
-        results = scanning(target,ports, args.banner)
+        results = scanning(target, ports, 
+                           args.banner,
+                           args.timeout)
         
         if args.output:
             export_json(args.output, results)
