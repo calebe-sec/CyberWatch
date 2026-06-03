@@ -43,12 +43,10 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> 
             if banner_enable:
                 print(banner)
 
-            if port == "80" or "443":
-                if web_enum:
-                    #print("ta rodando aqui o web_enum")
-                    web_info = http_enum(banner)
-                    #print(web_info)
-
+            if web_enum and service_info in ["http", "https"]:
+                web_info = http_enum(banner)
+            else:
+                web_info = None
             
             RESULT = {
                 "port"    : port,

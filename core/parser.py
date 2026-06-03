@@ -38,6 +38,21 @@ def create_parser():
         help="timeout"
     )
 
+    
+    
+    scan_parser.add_argument(
+        "--output",
+        help="put your path to save"
+    )
+
+    scan_parser.add_argument(
+        "-b",
+        "--banner",
+        help="banner grabbing",
+        action="store_true"
+    )
+    '''
+
     scan_parser.add_argument(
         "--threads",
         type=int,
@@ -51,16 +66,11 @@ def create_parser():
         action="store_true",
         help="enable banner grabbing"
     )
-
+    
     scan_parser.add_argument(
         "-s",
         "--save",
         help="save log, mark the path with --output"
-    )
-
-    scan_parser.add_argument(
-        "--output",
-        help="put your path to save"
     )
 
     scan_parser.add_argument(
@@ -69,14 +79,7 @@ def create_parser():
         help="fast scan",
         action="store_true"
     )
-
-    scan_parser.add_argument(
-        "-b",
-        "--banner",
-        help="banner grabbing",
-        action="store_true"
-    )
-
+    
     scan_parser.add_argument(
         "-fl",
         "--full",
@@ -96,7 +99,7 @@ def create_parser():
         action="store_true",
         help="only open port"
     )
-
+    '''
     scan_parser.add_argument(
         "--web-enum",
         action="store_true",
