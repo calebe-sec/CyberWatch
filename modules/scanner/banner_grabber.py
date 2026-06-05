@@ -1,6 +1,5 @@
 import socket
 import ssl
-import threading
 from core.parser import create_parser
 
 

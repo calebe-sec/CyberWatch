@@ -20,14 +20,14 @@ def create_parser():
     scan_parser.add_argument(
         "-t",
         "--target",
-        help="Target/IP",
+        help="Alvo: IP ou hostname (ex: 192.168.1.1 ou example.com)",
         required=True
     )
 
     scan_parser.add_argument(
         "-p",
         "--ports",
-        help="Ports",
+        help="Portas a varrer. Ex: '80', '1-1000', '22,80,443' (padrão: 1-1000)",
         default="1-1000"
     )
 
@@ -35,30 +35,43 @@ def create_parser():
         "--timeout",
         type= int,
         default= 5,
-        help="timeout"
+        help="Timeout por porta em segundos (padrão: 5)"
     )
 
     
     
     scan_parser.add_argument(
         "--output",
-        help="put your path to save"
+        help="Caminho para salvar resultados em JSON"
     )
 
     scan_parser.add_argument(
         "-b",
         "--banner",
-        help="banner grabbing",
+        help="Ativa banner grabbing nas portas abertas",
         action="store_true"
     )
-    '''
 
     scan_parser.add_argument(
         "--threads",
         type=int,
         default=1,
-        help="number of threads"
+        help="Número de threads paralelas (padrão: 100)"
     )
+
+    scan_parser.add_argument(
+        "--open-only",
+        action="store_true",
+        help="Exibe apenas portas abertas"
+    )
+
+    scan_parser.add_argument(
+        "--web-enum",
+        action="store_true",
+        help="Enumera serviços HTTP/HTTPS (título, content-type)",
+    )
+
+    '''
 
     scan_parser.add_argument(
         "-v",
@@ -94,17 +107,9 @@ def create_parser():
         help="no dns scan"
     )
 
-    scan_parser.add_argument(
-        "--open-only",
-        action="store_true",
-        help="only open port"
-    )
+    
     '''
-    scan_parser.add_argument(
-        "--web-enum",
-        action="store_true",
-        help="Enumerate HTTP/HTTPS services",
-    )
+    
 
     return parser
 

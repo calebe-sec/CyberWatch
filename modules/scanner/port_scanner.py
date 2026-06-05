@@ -1,5 +1,7 @@
-import threading
 import socket
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from core.parser import create_parser
 from modules.scanner.banner_grabber import grab_banner
 from modules.scanner.fingerprint import identify_service
@@ -71,33 +73,29 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> 
         s.close()    
 
 
-def scanning(ip: str, ports: list[int], banner, timeout=5, web_enum=False) -> None:
-    threads = []
+def scanning(ip: str, ports: list[int], banner, timeout=5,threads=100, web_enum=False) -> None:
     results = []
+    
+    with ThreadPoolExecutor(max_workers=threads) as pool:
 
-    def worker(ip, port, banner, timeout,web_enum, results):
-        result = scan(ip, port, banner, timeout, web_enum)
-        if result:
-            results.append(result)
+        futures = [pool.submit(
+            scan,
+            ip,
+            port,
+            banner,
+            timeout,
+            web_enum
+        )
+        for port in ports ]
 
-    for port in ports:
-        t = threading.Thread(target=worker,
-                             args=(ip,
-                                   port,
-                                   banner,
-                                   timeout,
-                                   web_enum,
-                                   results,
-                                   )
-                             )
-        threads.append(t) 
-        t.start()
-        
-    for t in threads:
-        t.join()
+        for future in as_completed(futures):
+            result = future.result()
+
+            if result:
+                results.append(result)
+
+    results.sort(key=lambda x: x["port"])
     return results
-
-
 
 if __name__ == '__main__':
 

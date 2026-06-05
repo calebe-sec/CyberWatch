@@ -1,5 +1,6 @@
 import shlex
 import readline
+import os
 
 from core.parser import create_parser
 from core.banner import get_random_banner
@@ -7,49 +8,86 @@ from modules.scanner.port_scanner import scanning, parser_ports
 from modules.scanner.export_scan import export_json
 from modules.scanner.dns_target import dns_target
 
+def clean():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def display_result(result: list) -> None:
+    for result in results:
+        status = result.get("status", "unknown").upper()
+        port = result.get("port", "?")
+        service = result.get("service", "unknown")
+        version = result.get("version", "")
+
+        print(f"[{status}] {port} : {service} : {version}")        
+        
+        web_info = result.get("web_enum")
+        if web_info:
+            print(f"  ├─ Title: {web_info.get('title', 'N/A')}")
+            print(f"  └─ Content-Type: {web_info.get('content_type', 'N/A')}")
+
 if __name__ == "__main__":
+    clean()
     print(get_random_banner())
 
     parser = create_parser()
 
     while True:
-        cmd = input("Cyberwatch > ")
+        try:
+            cmd = input("Cyberwatch > ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\n[*] Encerrando...")
+            break
+
+        if not cmd:
+            continue
 
         if cmd.lower() in ["exit", "quit"]:
+            print("[*] Até logo!")
             break
     
         try:
             args = parser.parse_args(shlex.split(cmd))
 
+            if not args.command:
+                print("[!] Nenhum comando fornecido. Use 'scan --help'.")
+                continue
+
             if args.command == "scan":
                 target = dns_target(args.target)
                 
                 if not target:
-                    print("[!] Invalid target")
-                    exit(1)
+                    print("[!] Alvo Inválido ou não resolvido")
+                    continue
 
                 ports = parser_ports(args.ports)
 
-                results = scanning(target, ports, 
-                                args.banner,
-                                args.timeout,
-                                args.web_enum)
+                if not ports:
+                    print("[!] Intervalo de portas inválido")
+                    continue
+
+                try:
+                    results = scanning(target, ports, 
+                                    args.banner,
+                                    args.timeout,
+                                    args.threads,
+                                    args.web_enum)
+                except OSError as e:
+                    print(f"[!] Erro de rede: {e}")
+                    continue
                 
                 if args.output:
                     export_json(args.output, results)
-                for result in results:
-                    print(
-                        f"[{result['status'].upper()}] "
-                        f"{result['port']} : "
-                        f"{result['service']} : "
-                        f"{result['version']}"
-                    )
-
-                    web_info = result.get("web_enum")
-
-                    if web_info:
-                        print(f"  ├─ Title: {web_info['title']}")
-                        print(f"  └─ Content-Type: {web_info['content_Type']}")
+                    print(f"[*] Resultados exportados para : {args.output}")
+                
+                if not results:
+                    print("[*] Nenhuma porta aberta encontrada")
+                else:
+                    display_result(results)
+                
 
         except SystemExit:
             pass
+        except ValueError as e:
+            print(f"[!] valor inválido: {e}")
+        except Exception as e:
+            print(f"[!] Erro inesperado: {e}")
