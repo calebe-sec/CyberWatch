@@ -1,0 +1,8 @@
+# CyberWatch - Dependencies
+# This project uses only the Python standard library.
+# Python 3.10+ is required.
+#
+# Standard library modules used:
+#   socket, ssl, concurrent.futures, json, ipaddress,
+#   argparse, shlex, readline, os, random, pathlib
+ 
