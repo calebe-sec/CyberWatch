@@ -42,7 +42,7 @@ def create_parser():
     
     scan_parser.add_argument(
         "--output",
-        help="Caminho para salvar resultados em JSON"
+        help="os arquivos vão para a pasta reports, em json e txt"
     )
 
     scan_parser.add_argument(
@@ -110,6 +110,15 @@ def create_parser():
     
     '''
     
+    reports_parser = subparsers.add_parser("reports",
+                                           help="Gerencia Relatórios de scans anteriores")
+
+    reports_parser.add_argument(
+        "-t",
+        "--target",
+        help="filtra pelo alvo (IP ou hostname) para exibir o último relatório",
+        default=None
+    )
 
     return parser
 

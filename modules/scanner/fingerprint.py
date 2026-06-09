@@ -13,9 +13,11 @@ services = {
 def identify_service(banner):
 
     if not banner:
-        return "unknown"
+        return 'unknown'
     
     s_banner = banner.lower()
     for assignature, service in services.items():
         if assignature in s_banner:
             return f"{service}"
+        
+    return "unknown"

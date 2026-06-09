@@ -5,13 +5,13 @@ import os
 from core.parser import create_parser
 from core.banner import get_random_banner
 from modules.scanner.port_scanner import scanning, parser_ports
-from modules.scanner.export_scan import export_json
 from modules.scanner.dns_target import dns_target
+from modules.report.report_manager import GerenciadorRelatorio
 
 def clean():
     os.system("cls" if os.name == "nt" else "clear")
 
-def display_result(result: list) -> None:
+def display_result(results: list) -> None:
     for result in results:
         status = result.get("status", "unknown").upper()
         port = result.get("port", "?")
@@ -76,14 +76,35 @@ if __name__ == "__main__":
                     continue
                 
                 if args.output:
-                    export_json(args.output, results)
-                    print(f"[*] Resultados exportados para : {args.output}")
+                    gerenciador = GerenciadorRelatorio(target)
+                    gerenciador.salvardados(results)
+                    gerenciador.salvarjson(results)
+                    
                 
                 if not results:
                     print("[*] Nenhuma porta aberta encontrada")
                 else:
                     display_result(results)
-                
+            
+            elif args.command == "reports":
+                if args.target:
+                    gerenciador = GerenciadorRelatorio(args.target)
+                    dados = gerenciador.recuperadados()
+                    if dados:
+                        print(f"\n[*] Último relatório de '{args.target}':")
+                        
+                        print(f"{'PORT':<8} {'STATUS':<8} {'SERVICE':<15} {'VERSION'}")
+                        
+                        print("-" * 50)
+                        
+                        for linha in dados:
+                            print(f"{str(linha.get('port','')):<8} "
+                                  f"{str(linha.get('status','')):<8} "
+                                  f"{str(linha.get('service','')):<15} "
+                                  f"{linha.get('version','')}")
+                    else:
+                        GerenciadorRelatorio.listarRelatorios()
+
 
         except SystemExit:
             pass

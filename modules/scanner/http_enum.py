@@ -26,5 +26,5 @@ def get_content_type(response):
     
 def http_enum(banner):
     RESULT = {"title"       : get_title(banner),
-            "content_Type": get_content_type(banner)}
+            "content_type": get_content_type(banner)}
     return RESULT
