@@ -15,7 +15,8 @@ CyberWatch is an interactive CLI tool for TCP port scanning, service fingerprint
 - **HTTP/HTTPS Enumeration** — extracts page title and `Content-Type` with `--web-enum`
 - **DNS Resolution** — accepts hostnames or IPs as targets
 - **Threaded Scanning** — configurable thread pool via `--threads` (default: 100)
-- **JSON Export** — save results to a file with `--output`
+- **JSON and CSV Export** — save results to a file with `--output`
+- **Reports** — files saved in the reports modules with search
 - **Interactive Shell** — persistent session with history support
 
 ---
@@ -43,7 +44,8 @@ CyberWatch/
 ## Requirements
 
 - Python 3.10+
-- No external dependencies — uses only the Python standard library
+- readline (Linux)
+- pyreadline3 (Windows)
 
 ---
 
