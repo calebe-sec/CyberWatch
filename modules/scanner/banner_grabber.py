@@ -1,6 +1,5 @@
 import socket
 import ssl
-from core.parser import create_parser
 
 
 def connect_sock(ip, port):

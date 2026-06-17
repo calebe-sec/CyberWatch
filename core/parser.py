@@ -42,7 +42,7 @@ def create_parser():
     
     scan_parser.add_argument(
         "--output",
-        help="os arquivos vão para a pasta reports, em json e txt"
+        help="os arquivos vão para a pasta reports, em json e CSV"
     )
 
     scan_parser.add_argument(
@@ -55,14 +55,8 @@ def create_parser():
     scan_parser.add_argument(
         "--threads",
         type=int,
-        default=1,
+        default=100,
         help="Número de threads paralelas (padrão: 100)"
-    )
-
-    scan_parser.add_argument(
-        "--open-only",
-        action="store_true",
-        help="Exibe apenas portas abertas"
     )
 
     scan_parser.add_argument(
@@ -72,6 +66,12 @@ def create_parser():
     )
 
     '''
+
+    scan_parser.add_argument(
+        "--open-only",
+        action="store_true",
+        help="Exibe apenas portas abertas"
+    )
 
     scan_parser.add_argument(
         "-v",
@@ -109,7 +109,16 @@ def create_parser():
 
     
     '''
+    #ping
+    ping_parser = subparsers.add_parser("ping",
+                                        help="faz um ping SCAN")
     
+    ping_parser.add_argument(
+        "target",
+        help="faz o ping pelo host que selecionar"
+    )
+    
+    #reports
     reports_parser = subparsers.add_parser("reports",
                                            help="Gerencia Relatórios de scans anteriores")
 
@@ -119,6 +128,7 @@ def create_parser():
         help="filtra pelo alvo (IP ou hostname) para exibir o último relatório",
         default=None
     )
+
 
     return parser
 

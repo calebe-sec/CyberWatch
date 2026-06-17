@@ -6,6 +6,7 @@ from core.parser import create_parser
 from core.banner import get_random_banner
 from modules.scanner.port_scanner import scanning, parser_ports
 from modules.scanner.dns_target import dns_target
+from modules.scanner.ping import ping
 from modules.report.report_manager import GerenciadorRelatorio
 
 def clean():
@@ -85,6 +86,12 @@ if __name__ == "__main__":
                     print("[*] Nenhuma porta aberta encontrada")
                 else:
                     display_result(results)
+
+            elif args.command == "ping":
+                if not args.target:
+                    print("[!] Alvo inválido, Use: ping <IP>")
+                    continue
+                ping(args.target)
             
             elif args.command == "reports":
                 if args.target:
