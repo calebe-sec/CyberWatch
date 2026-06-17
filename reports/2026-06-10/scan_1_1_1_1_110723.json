@@ -1,9 +1,0 @@
-[
-    {
-        "port": 80,
-        "status": "open",
-        "service": "http",
-        "version": "cloudflare",
-        "web_enum": null
-    }
-]
