@@ -1,9 +1,11 @@
 import os
 import json
+import uuid
+
 from datetime import datetime
 
 class GerenciadorRelatorio:
-    BASE_DIR = "reports"
+    BASE_DIR = 'reports'
 
     def __init__(self,target: str):
         self.target = target.replace(".", "_").replace(":","_")
@@ -38,16 +40,16 @@ class GerenciadorRelatorio:
             ]
             linhas.append(linha)
 
-            try:
-                with open(caminho, "w", encoding="utf-8") as f:
-                    for sublista in linhas:
-                        linha_str = ",".join(str(elemento) for elemento in sublista)
+        try:
+            with open(caminho, "w", encoding="utf-8") as f:
+                for sublista in linhas:
+                    linha_str = ",".join(str(elemento) for elemento in sublista)
                     f.write(linha_str + "\n")
-                print(f"[*] Relatório CSV salvo em: {caminho}")
-            except Exception as e:
-                print(f"[!] Erro ao salvar CSV: {e}")
+            print(f"[*] Relatório CSV salvo em: {caminho}")
+        except Exception as e:
+            print(f"[!] Erro ao salvar CSV: {e}")
     
-            return caminho
+        return caminho
     def recuperadados(self) -> list:
             try:
                 arquivos = [
@@ -77,8 +79,8 @@ class GerenciadorRelatorio:
                     cabecalho = [c.strip() for c in linhas[0].split(",")]
 
                     for linha in linhas[1:]:
-                        linhas = linha.strip()
-                        if not linha:
+                        linha_limpa = linha.strip()
+                        if not linha_limpa:
                             continue
 
                         elementos = linha.split(",")
@@ -94,8 +96,8 @@ class GerenciadorRelatorio:
                                     valor = item
                             linha_com_tipos.append(valor)
 
-                            registro = dict(zip(cabecalho,linha_com_tipos))
-                            dados.append(registro)
+                        registro = dict(zip(cabecalho,linha_com_tipos))
+                        dados.append(registro)
 
             except Exception as e:
                 print(f"[!] Erro ao recuperar dados: {e}")
@@ -103,14 +105,26 @@ class GerenciadorRelatorio:
             return dados
         
     def salvarjson(self, results: list) -> str:
+
+        report_id = str(uuid.uuid4())
+
+        report = {
+            "report_id": report_id,
+            "result" : results
+        }
+
         caminho = self._nome_arquivo("json")
+
         try:
             with open(caminho, "w", encoding="utf-8") as f:
-                json.dump(results, f, indent=4, ensure_ascii=False)
+                json.dump(report, f, indent=4, ensure_ascii=False)
+
                 print(f"[*] Relatório json salvo em: {caminho}")
+        
         except Exception as e:
-            print(f"[!] Erro ao savar o jason: {e}")
-            return caminho
+            print(f"[!] Erro ao savar o json: {e}")
+        
+        return caminho
         
     @staticmethod
     def listarRelatorios(base_dir: str = "reports") -> None:

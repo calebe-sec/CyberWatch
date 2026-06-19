@@ -1,3 +1,4 @@
+import logging
 import socket
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -7,6 +8,8 @@ from modules.scanner.banner_grabber import grab_banner
 from modules.scanner.fingerprint import identify_service
 from modules.scanner.version_detection import parser_versions
 from modules.scanner.http_enum import http_enum
+
+logger = logging.getLogger(__name__)
 
 def parser_ports(arguments) -> list[int]:
     ports = []
@@ -67,7 +70,7 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> 
         
         # print(f"Port {port} -> {result}")
     except Exception as err:
-        print(f"[*] ERROR: {err}")
+        logger.warning(f"[*] ERROR: {err}")
 
     finally:
         s.close()    

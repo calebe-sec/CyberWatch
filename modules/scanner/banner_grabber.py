@@ -1,6 +1,10 @@
+import logging
 import socket
 import ssl
 
+from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 def connect_sock(ip, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,9 +22,14 @@ def receive_response(sock) -> str:
     
 
 def grab_banner_http(ip: str, port: int):
+
+    sock = None
             
     try:
-        sock = connect_sock(ip, port)   
+        sock = connect_sock(ip, port)
+
+        if not sock:
+            logger.warning("[!] Não foi possivel fazer a conexão") 
 
         request =(
             "GET / HTTP/1.1\r\n"
@@ -32,17 +41,27 @@ def grab_banner_http(ip: str, port: int):
         return receive_response(sock)
 
     except Exception as err:
-            print(err)
+            logger.warning(err)
 
     finally:
-        sock.close()
+        if sock:
+            sock.close()
 
-def grab_banner_https(ip:str, port: int):           
+def grab_banner_https(ip:str, port: int):  
+
+    sock = None
+    ssl_socket = None         
     
     try: 
         sock = connect_sock(ip, port)
+        
+        if not sock:
+            logger.warning("[!] Não foi possivel fazer a conexão") 
 
-        ssl_socket = ssl.wrap_socket(sock)
+        ssl_socket = ssl.create_default_context().wrap_socket(sock, server_hostname=ip)
+
+        if not ssl_socket:
+            logger.warning("[!] conexão SSL não foi completada")
 
         ssl_socket.send(b"GET / HTTP/1.1\r\n")
         response = ssl_socket.recv(4096)
@@ -52,10 +71,12 @@ def grab_banner_https(ip:str, port: int):
         return decod
 
     except Exception as err:
-            print(err)
+            logger.warning(err)
 
     finally:
+        if ssl_socket:
             ssl_socket.close()
+        elif sock:
             sock.close()
 
 """
@@ -69,53 +90,80 @@ def grab_banner_https(ip:str, port: int):
 
 def grab_banner_ssh(ip: str, port: int):
 
+    sock = None
+
     try:
         sock = connect_sock(ip, port)
+
+        if not sock:
+            logger.warning("[!] Não foi possivel fazer a conexão") 
 
         return receive_response(sock)
 
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
     finally:
-        sock.close()
+        if sock:
+            sock.close()
 
-def grab_banner_ftp(ip: str, port: int):        
+def grab_banner_ftp(ip: str, port: int):   
+
+    sock = None
+
     try:
         sock = connect_sock(ip, port)
+        
+        if not sock:
+            logger.warning("[!] Não foi possivel fazer a conexão") 
 
         return receive_response(sock)
     
     except Exception as err:
-        print(err)
+        logger.warning(err)
     
     finally:
-        sock.close()
+        if sock:
+            sock.close()
 
 def grab_banner_telnet(ip: str, port: int):
+
+    sock = None
+
     try:
         sock = connect_sock(ip, port)
+
+        if not sock:
+            logger.warning("[!] Não foi possivel fazer a conexão") 
 
         sock.send(b"whoami\r\n")
         return receive_response(sock)
     
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
     finally:
-        sock.close()
+        if sock:
+            sock.close()
 
 def grab_banner_smtp(ip: str, port: int):
+
+    sock = None
+
     try:
         sock = connect_sock(ip, port)
+
+        if not sock:
+            logger.warning("[!] Não foi possivel fazer a conexão") 
 
         return receive_response(sock)
 
     except Exception as e:
-        print(e)
+        logger.warning(e)
     
     finally:
-         sock.close()
+        if sock:
+            sock.close()
 
 SERVICES = {
 
@@ -143,9 +191,9 @@ def grab_banner(ip: str, port: int) -> str:
             return handler(ip, port)
 
         else:
-            print(f"[!] No handler for port {port}")
+            logger.warning(f"[!] No handler for port {port}")
     except Exception as e:
-         print(e)
+         logger.warning(e)
 
 if __name__ == '__main__':
     

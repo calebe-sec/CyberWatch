@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 def parser_ssh_versions(banner):
     openssh_versions = [
     "1.2.2p1", "2.5.1p1", "2.9.9", "3.0", "3.4", "3.5", "3.6", "3.6.1",
@@ -23,7 +27,7 @@ def parser_ssh_versions(banner):
         return "unknown"
         
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
 def parser_http_versions(banner):
 
@@ -39,7 +43,7 @@ def parser_http_versions(banner):
         return "unknown"
     
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
 def parser_telnet_versions(banner):
 
@@ -76,7 +80,7 @@ def parser_telnet_versions(banner):
             
         return "unknown"
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
 
 def parser_smtp_versions(banner):
@@ -103,7 +107,7 @@ def parser_smtp_versions(banner):
         return "unknown"
     
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
 
 def parser_ftp_versions(banner):
@@ -129,7 +133,7 @@ def parser_ftp_versions(banner):
             
         return "unknown"
     except Exception as err:
-        print(err)
+        logger.warning(err)
 
 
 PARSERS = {
