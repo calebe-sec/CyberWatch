@@ -6,3 +6,6 @@
 #   socket, ssl, concurrent.futures, json, ipaddress,
 #   argparse, shlex, readline, os, random, pathlib
  
+
+ colorama >= 0.4.6
+ flask >= 3.1.3

@@ -154,7 +154,7 @@ scan -t TARGET [options]
 - [x] Interactive Shell
 - [x] Configurable Thread Pool
 - [x] JSON Export
-- [ ] Host Discovery (ping sweep)
+- [x] Host Discovery (ping sweep)
 - [ ] Subdomain Enumeration
 - [ ] UDP Scan
 - [ ] OS Detection
