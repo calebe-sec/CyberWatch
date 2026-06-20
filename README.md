@@ -15,9 +15,21 @@ CyberWatch is an interactive CLI tool for TCP port scanning, service fingerprint
 - **HTTP/HTTPS Enumeration** — extracts page title and `Content-Type` with `--web-enum`
 - **DNS Resolution** — accepts hostnames or IPs as targets
 - **Threaded Scanning** — configurable thread pool via `--threads` (default: 100)
-- **JSON and CSV Export** — save results to a file with `--output`
-- **Reports** — files saved in the reports modules with search
+- **Host Discovery** — `ping` command for single-host checks or full `/24` network sweeps
+- **JSON and CSV Export** — save results to `reports/` with `--output`
+- **Report Management** — `reports` command lists saved scans or shows the latest report for a target
+- **Web Dashboard** — local Flask dashboard (`dashboard` command) to browse saved reports in the browser
 - **Interactive Shell** — persistent session with history support
+
+---
+
+## Screenshots
+
+**CLI — scan in action**
+![CLI scan](docs/screenshots/cli-scan.png)
+
+**Web Dashboard**
+![Dashboard](docs/screenshots/dashboard.png)
 
 ---
 
@@ -27,16 +39,23 @@ CyberWatch is an interactive CLI tool for TCP port scanning, service fingerprint
 CyberWatch/
 ├── main.py
 ├── core/
-│   ├── banner.py          # ASCII banner display
-│   └── parser.py          # CLI argument parser
-└── modules/scanner/
-    ├── port_scanner.py    # Core scanner with ThreadPoolExecutor
-    ├── banner_grabber.py  # Protocol-specific banner grabbing
-    ├── fingerprint.py     # Service identification from banner
-    ├── version_detection.py  # Version string parsing per service
-    ├── http_enum.py       # HTTP title and content-type extraction
-    ├── dns_target.py      # DNS resolution / IP validation
-    └── export_scan.py     # JSON report export
+│   ├── banner.py             # ASCII banner display
+│   └── parser.py             # CLI argument parser
+├── modules/
+│   ├── scanner/
+│   │   ├── port_scanner.py      # Core scanner with ThreadPoolExecutor
+│   │   ├── banner_grabber.py    # Protocol-specific banner grabbing
+│   │   ├── fingerprint.py       # Service identification from banner
+│   │   ├── version_detection.py # Version string parsing per service
+│   │   ├── http_enum.py         # HTTP title and content-type extraction
+│   │   ├── dns_target.py        # DNS resolution / IP validation
+│   │   └── ping.py              # Host discovery (single host / network sweep)
+│   ├── report/
+│   │   ├── report_manager.py    # JSON/CSV report saving and retrieval
+│   │   └── server.py            # Flask app serving the web dashboard
+│   └── dashboard/
+│       └── dashboard.py         # Launches the Flask dashboard and opens the browser
+└── tests/                    # pytest test suite
 ```
 
 ---
@@ -44,8 +63,16 @@ CyberWatch/
 ## Requirements
 
 - Python 3.10+
+- [Flask](https://pypi.org/project/Flask/) >= 3.1.3 (web dashboard)
+- [colorama](https://pypi.org/project/colorama/) >= 0.4.6 (colored terminal output)
 - readline (Linux)
 - pyreadline3 (Windows)
+
+Install dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
@@ -104,12 +131,66 @@ CyberWatch > scan -t scanme.nmap.org -p 80 --web-enum
 CyberWatch > scan -t 10.0.0.1 -p 1-65535 --timeout 3 --threads 200
 ```
 
-### Export Results to JSON
+### Export Results to JSON and CSV
 
 ```
-CyberWatch > scan -t scanme.nmap.org -p 1-1000 --output results.json
-[*] Resultados exportados para: results.json
+CyberWatch > scan -t scanme.nmap.org -p 1-1000 --output
+[*] Relatório CSV salvo em: reports/2026-06-20/scan_scanme_nmap_org_153012.csv
+[*] Relatório json salvo em: reports/2026-06-20/scan_scanme_nmap_org_153012.json
 ```
+
+### Host Discovery (Ping)
+
+Single host:
+
+```
+CyberWatch > ping 192.168.1.1
+192.168.1.1 -> ativo
+```
+
+Full `/24` network sweep:
+
+```
+CyberWatch > ping 192.168.1.0/24
+192.168.1.1 -> ativo
+192.168.1.34 -> ativo
+192.168.1.254 -> ativo
+```
+
+### Viewing Reports
+
+List every saved report, grouped by date:
+
+```
+CyberWatch > reports
+
+ 2026-06-20 (2 arquivos)
+     └─ scan_scanme_nmap_org_153012.csv
+     └─ scan_scanme_nmap_org_153012.json
+```
+
+Show the latest report for a specific target:
+
+```
+CyberWatch > reports -t scanme.nmap.org
+
+[*] Último relatório de 'scanme.nmap.org':
+PORT     STATUS   SERVICE         VERSION
+--------------------------------------------------
+22       open     ssh             OpenSSH_8.9p1
+80       open     http            apache/2.4.7
+```
+
+### Web Dashboard
+
+Launches a local Flask server and opens it in your browser to browse saved reports visually:
+
+```
+CyberWatch > dashboard
+TENTANDO ABRIR O DASHBOARD
+```
+
+Opens automatically at `http://127.0.0.1:5000`. Type `quit` or `exit` to stop the server.
 
 ---
 
@@ -137,8 +218,18 @@ scan -t TARGET [options]
   --threads        Number of parallel threads (default: 100)
   --banner         Enable raw banner grabbing
   --web-enum       Enumerate HTTP/HTTPS services (title, content-type)
-  --open-only      Show open ports only
-  --output FILE    Export results to JSON file
+  --output         Save results to reports/ as JSON and CSV
+```
+
+---
+
+## Testing
+
+The project includes a `pytest` test suite covering the scanner, fingerprinting, and report modules:
+
+```bash
+pip install pytest
+pytest
 ```
 
 ---
@@ -153,8 +244,10 @@ scan -t TARGET [options]
 - [x] HTTP/HTTPS Enumeration
 - [x] Interactive Shell
 - [x] Configurable Thread Pool
-- [x] JSON Export
+- [x] JSON/CSV Export
 - [x] Host Discovery (ping sweep)
+- [x] Report Management (CLI)
+- [x] Web Dashboard
 - [ ] Subdomain Enumeration
 - [ ] UDP Scan
 - [ ] OS Detection

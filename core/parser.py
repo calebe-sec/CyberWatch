@@ -42,7 +42,8 @@ def create_parser():
     
     scan_parser.add_argument(
         "--output",
-        help="os arquivos vão para a pasta reports, em json e CSV"
+        help="os arquivos vão para a pasta reports, em json e CSV",
+        action="store_true"
     )
 
     scan_parser.add_argument(
@@ -128,6 +129,12 @@ def create_parser():
         help="filtra pelo alvo (IP ou hostname) para exibir o último relatório",
         default=None
     )
+
+
+    #dashboard
+    dashboard_parser = subparsers.add_parser("dashboard",
+                                             help="envia para o site")
+    
 
 
     return parser
