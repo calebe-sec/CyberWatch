@@ -12,6 +12,7 @@ from modules.scanner.port_scanner import scanning, parser_ports
 from modules.scanner.dns_target import dns_target
 from modules.scanner.ping import ping
 from modules.report.report_manager import GerenciadorRelatorio
+from modules.dashboard.dashboard import run 
 
 logger = logging.getLogger(__name__)
 
@@ -118,11 +119,16 @@ if __name__ == "__main__":
                     print(f"{Fore.RED + '[!] Alvo inválido, Use:'} {Style.BRIGHT + 'ping <IP>'}")
                     continue
                 ping(args.target)
+
+            elif args.command == "dashboard":
+                run()
             
             elif args.command == "reports":
+                
                 if args.target:
                     gerenciador = GerenciadorRelatorio(args.target)
                     dados = gerenciador.recuperadados()
+                    
                     if dados:
                         print(f"\n{Style.BRIGHT + '[*] Último relatório de'} '{args.target}':")
                         
