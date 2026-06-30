@@ -66,6 +66,12 @@ def create_parser():
         help="Enumera serviços HTTP/HTTPS (título, content-type)",
     )
 
+    scan_parser.add_argument(
+    "--cve",
+    action="store_true",
+    help="Busca CVEs conhecidos para o serviço/versão identificados (consulta a API do NVD)"
+    )
+
     '''
 
     scan_parser.add_argument(

@@ -248,10 +248,10 @@ pytest
 - [x] Host Discovery (ping sweep)
 - [x] Report Management (CLI)
 - [x] Web Dashboard
+- [x] CVE Lookup Integration
 - [ ] Subdomain Enumeration
 - [ ] UDP Scan
 - [ ] OS Detection
-- [ ] CVE Lookup Integration
 
 ---
 

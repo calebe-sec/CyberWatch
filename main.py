@@ -12,7 +12,8 @@ from modules.scanner.port_scanner import scanning, parser_ports
 from modules.scanner.dns_target import dns_target
 from modules.scanner.ping import ping
 from modules.report.report_manager import GerenciadorRelatorio
-from modules.dashboard.dashboard import run 
+from modules.dashboard.dashboard import run
+from modules.scanner.cve_lookup import display_cves
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,10 @@ def display_result(results: list) -> None:
         if web_info:
             print(f"  ├─ Title: {web_info.get('title', 'N/A')}")
             print(f"  └─ Content-Type: {web_info.get('content_type', 'N/A')}")
+
+        cves = result.get("cves")
+        if cves:
+            display_cves(cves)
 
 if __name__ == "__main__":
     clean()
@@ -97,7 +102,8 @@ if __name__ == "__main__":
                                     args.banner,
                                     args.timeout,
                                     args.threads,
-                                    args.web_enum)
+                                    args.web_enum,
+                                    args.cve)
                 except OSError as e:
                     logger.warning(f"[!] Erro de rede: {e}")
                     print(f"{Fore.RED + '[!] Erro de rede: '}{e}")

@@ -8,6 +8,7 @@ from modules.scanner.banner_grabber import grab_banner
 from modules.scanner.fingerprint import identify_service
 from modules.scanner.version_detection import parser_versions
 from modules.scanner.http_enum import http_enum
+from modules.scanner.cve_lookup import cve_search
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ def parser_ports(arguments) -> list[int]:
 
     return ports
         
-def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> None:
+def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False, cve_enable=False) -> None:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(timeout)
@@ -53,12 +54,17 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> 
             else:
                 web_info = None
             
+            if cve_enable and service_info != "unknown":
+                cves = cve_search(service_info, version_service)
+            else:
+                cves = []
             RESULT = {
                 "port"    : port,
                 "status"  : "open",
                 "service" : service_info,
                 "version" : version_service,
-                "web_enum": web_info
+                "web_enum": web_info,
+                "cves" : cves
             }
             
 
@@ -76,7 +82,7 @@ def scan(ip: str, port: int, banner_enable=False, timeout=5, web_enum=False) -> 
         s.close()    
 
 
-def scanning(ip: str, ports: list[int], banner, timeout=5,threads=100, web_enum=False) -> None:
+def scanning(ip: str, ports: list[int], banner, timeout=5,threads=100, web_enum=False, cve_enable=False) -> None:
     results = []
     
     with ThreadPoolExecutor(max_workers=threads) as pool:
@@ -87,7 +93,8 @@ def scanning(ip: str, ports: list[int], banner, timeout=5,threads=100, web_enum=
             port,
             banner,
             timeout,
-            web_enum
+            web_enum,
+            cve_enable
         )
         for port in ports ]
 
